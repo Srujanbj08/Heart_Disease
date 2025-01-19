@@ -8,7 +8,7 @@ import plotly.graph_objects as go
 
 # Load the dataset
 try:
-    df = pd.read_csv('C:/Users/Ziven/Downloads/heart.csv')
+    df = pd.read_csv('heart (1).csv')
 
     # Preprocess the data
     X = df.drop('target', axis=1)
