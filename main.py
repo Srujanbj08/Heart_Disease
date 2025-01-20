@@ -69,8 +69,20 @@ try:
     with col1:
         st.metric(label="Accuracy", value=f"{accuracy:.2%}")
     with col2:
-        st.text("Classification Report:")
-        st.text(report)
+        st.text("Confusion Matrix:")
+        st.text(cm)
+
+    # Display the classification report as a table
+    st.subheader("Classification Report")
+    report_dict = classification_report(y_test, y_pred, output_dict=True)
+    report_df = pd.DataFrame(report_dict).transpose()
+    report_df = report_df.round(2)  # Round values to 2 decimal places
+    st.dataframe(
+        report_df.style.applymap(
+            lambda val: "background-color: #cce5ff;" if isinstance(val, float) and val >= 0.85 else
+                        "background-color: #ffcccb;" if isinstance(val, float) else ""
+        ).format("{:.2f}")
+    )
 
     # Initialize session state to handle reset
     if "reset" not in st.session_state:
