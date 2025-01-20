@@ -32,14 +32,45 @@ try:
     report = classification_report(y_test, y_pred)
     cm = confusion_matrix(y_test, y_pred)
 
+    # Add custom CSS
+    st.markdown("""
+        <style>
+            body {
+                background-color: #f7f8fc;
+            }
+            .main {
+                background: #ffffff;
+                border-radius: 10px;
+                padding: 20px;
+            }
+            h1, h2, h3, h4 {
+                color: #4c4c4c;
+            }
+            .stButton>button {
+                background: linear-gradient(to right, #6a11cb, #2575fc);
+                border: none;
+                color: white;
+                padding: 8px 16px;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+            .stButton>button:hover {
+                background: linear-gradient(to right, #2575fc, #6a11cb);
+            }
+        </style>
+    """, unsafe_allow_html=True)
+
     # Streamlit app
-    st.title("Heart Disease Prediction")
+    st.title("💖 Heart Disease Prediction Dashboard")
 
     # Display model evaluation metrics
-    st.write("## Model Evaluation")
-    st.write(f"Accuracy: {accuracy}")
-    st.write("Classification Report:")
-    st.text(report)
+    st.subheader("Model Evaluation")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric(label="Accuracy", value=f"{accuracy:.2%}")
+    with col2:
+        st.text("Classification Report:")
+        st.text(report)
 
     # Initialize session state to handle reset
     if "reset" not in st.session_state:
@@ -63,63 +94,23 @@ try:
         st.session_state.reset = True
 
     # Get user input
-    st.write("## Please enter the following information:")
+    st.subheader("Patient Information")
+    st.markdown("### Fill in the following details to predict heart disease risk:")
 
-    with st.expander("Age: The age of the patient."):
-        age = st.number_input("Age", min_value=0, max_value=120, value=st.session_state.age, key='age')
+    age = st.number_input("🧓 Age", min_value=0, max_value=120, value=st.session_state.age, key='age')
+    sex = st.selectbox("🚻 Gender", ["", "Male", "Female"], key='sex')
+    cp = st.selectbox("💔 Chest Pain Type", ["", "Typical Angina", "Atypical Angina", "Non-Anginal Pain", "Asymptomatic"], key='cp')
+    trestbps = st.number_input("📉 Resting Blood Pressure", min_value=0, max_value=300, value=st.session_state.trestbps, key='trestbps')
+    chol = st.number_input("🩸 Cholesterol", min_value=0, max_value=600, value=st.session_state.chol, key='chol')
+    fbs = st.selectbox("🍬 Fasting Blood Sugar > 120 mg/dl", ["", "True", "False"], key='fbs')
+    restecg = st.selectbox("📊 Resting Electrocardiogram", ["", "Normal", "ST-T Wave Abnormality", "Left Ventricular Hypertrophy"], key='restecg')
+    thalach = st.number_input("🏃 Maximum Heart Rate", min_value=0, max_value=220, value=st.session_state.thalach, key='thalach')
+    exang = st.selectbox("💪 Exercise-Induced Angina", ["", "True", "False"], key='exang')
+    oldpeak = st.number_input("📉 ST Depression", min_value=0.0, max_value=10.0, value=st.session_state.oldpeak, key='oldpeak')
+    slope = st.selectbox("📈 Slope of ST Segment", ["", "Upsloping", "Flat", "Downsloping"], key='slope')
+    ca = st.number_input("🩻 Major Vessels", min_value=0, max_value=4, value=st.session_state.ca, key='ca')
+    thal = st.selectbox("🧬 Thalassemia", ["", "Normal", "Fixed Defect", "Reversible Defect"], key='thal')
 
-    with st.expander("Sex: The gender of the patient."):
-        sex = st.selectbox("Sex", ["", "Male", "Female"], index=["", "Male", "Female"].index(st.session_state.sex), key='sex')
-
-    with st.expander("Chest Pain Type: The type of chest pain experienced."):
-        cp = st.selectbox("Chest Pain Type", ["", "Typical Angina", "Atypical Angina", "Non-Anginal Pain", "Asymptomatic"], index=["", "Typical Angina", "Atypical Angina", "Non-Anginal Pain", "Asymptomatic"].index(st.session_state.cp), key='cp')
-
-    with st.expander("Resting Blood Pressure: The resting blood pressure in mm Hg."):
-        trestbps = st.number_input("Resting Blood Pressure", min_value=0, max_value=300, value=st.session_state.trestbps, key='trestbps')
-
-    with st.expander("Cholesterol: Serum cholesterol in mg/dl."):
-        chol = st.number_input("Cholesterol", min_value=0, max_value=600, value=st.session_state.chol, key='chol')
-
-    with st.expander("Fasting Blood Sugar: Whether fasting blood sugar is greater than 120 mg/dl (True or False)."):
-        fbs = st.selectbox("Fasting Blood Sugar", ["", "True", "False"], index=["", "True", "False"].index(st.session_state.fbs), key='fbs')
-
-    with st.expander("Resting Electrocardiogram: The results of the resting electrocardiogram."):
-        restecg = st.selectbox("Resting Electrocardiogram", ["", "Normal", "ST-T Wave Abnormality", "Left Ventricular Hypertrophy"], index=["", "Normal", "ST-T Wave Abnormality", "Left Ventricular Hypertrophy"].index(st.session_state.restecg), key='restecg')
-
-    with st.expander("Maximum Heart Rate: The maximum heart rate achieved during exercise."):
-        thalach = st.number_input("Maximum Heart Rate", min_value=0, max_value=220, value=st.session_state.thalach, key='thalach')
-
-    with st.expander("Exercise Induced Angina: Whether the patient experiences angina induced by exercise (True or False)."):
-        exang = st.selectbox("Exercise Induced Angina", ["", "True", "False"], index=["", "True", "False"].index(st.session_state.exang), key='exang')
-
-    with st.expander("ST Depression: ST depression induced by exercise relative to rest."):
-        oldpeak = st.number_input("ST Depression", min_value=0.0, max_value=10.0, value=st.session_state.oldpeak, key='oldpeak')
-
-    with st.expander("Slope of ST Segment: The slope of the peak exercise ST segment."):
-        slope = st.selectbox("Slope of ST Segment", ["", "Upsloping", "Flat", "Downsloping"], index=["", "Upsloping", "Flat", "Downsloping"].index(st.session_state.slope), key='slope')
-
-    with st.expander("Number of Major Vessels: The number of major vessels colored by fluoroscopy (0-4)."):
-        ca = st.number_input("Number of Major Vessels", min_value=0, max_value=4, value=st.session_state.ca, key='ca')
-
-    with st.expander("Thalassemia: A blood disorder called thalassemia."):
-        thal = st.selectbox("Thalassemia", ["", "Normal", "Fixed Defect", "Reversible Defect"], index=["", "Normal", "Fixed Defect", "Reversible Defect"].index(st.session_state.thal), key='thal')
-
-    # Check if reset button was clicked
-    def reset_fields():
-        st.session_state.reset = True
-        st.session_state.age = 0
-        st.session_state.sex = ""
-        st.session_state.cp = ""
-        st.session_state.trestbps = 0
-        st.session_state.chol = 0
-        st.session_state.fbs = ""
-        st.session_state.restecg = ""
-        st.session_state.thalach = 0
-        st.session_state.exang = ""
-        st.session_state.oldpeak = 0.0
-        st.session_state.slope = ""
-        st.session_state.ca = 0
-        st.session_state.thal = ""
     # Convert user input to numerical values
     user_input = pd.DataFrame({
         "age": [age],
@@ -141,19 +132,19 @@ try:
     user_input_scaled = scaler.transform(user_input)
 
     # Make a prediction
-    if st.button("Predict"):
+    if st.button("🔍 Predict"):
         prediction = model.predict(user_input_scaled)
         prediction_proba = model.predict_proba(user_input_scaled)[0][1]  # Probability of having heart disease
 
         # Display the prediction
-        st.write("## Prediction:")
+        st.markdown("### Prediction:")
         if prediction[0] == 1:
-            st.write("You are likely to have heart disease.")
+            st.success("You are likely to have heart disease. 🩺")
         else:
-            st.write("You are unlikely to have heart disease.")
+            st.success("You are unlikely to have heart disease. 🎉")
 
         # Display probability using a gauge chart
-        st.write("## Heart Disease Risk Probability")
+        st.markdown("### Heart Disease Risk Probability")
         fig = go.Figure(go.Indicator(
             mode="gauge+number",
             value=prediction_proba * 100,
@@ -172,9 +163,9 @@ try:
         st.plotly_chart(fig)
 
     # Reset button
-    if st.button("Reset"):
+    if st.button("🔄 Reset"):
         reset_fields()
-        st.experimental_rerun()  # Rerun the app to update the widgets
+        st.experimental_rerun()
 
 except Exception as e:
     st.error(f"An error occurred: {e}")
